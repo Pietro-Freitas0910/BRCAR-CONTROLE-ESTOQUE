@@ -1,10 +1,10 @@
-# Vercel runtime fix
+# Correção de deploy na Vercel
 
-The custom `src/start.ts` bootstrap was removed because its direct calls to
-`createCsrfMiddleware` / `createMiddleware` produced HTTP 500 errors in the Vercel
-server runtime. TanStack Start now uses its default bootstrap.
+Versões TanStack ajustadas para versões publicadas e compatíveis:
 
-The TanStack packages are pinned to the same version (`1.168.32`) to avoid
-cross-version runtime API mismatches during `npm install` on Vercel.
+- @tanstack/react-router: 1.170.18
+- @tanstack/react-start: 1.168.32
+- @tanstack/router-plugin: 1.168.23
+- Node.js: 22.x
 
-Node is pinned to 22.x via `package.json` for consistent server builds.
+O erro ETARGET anterior acontecia porque `@tanstack/react-router@1.168.32` não existe no npm.
