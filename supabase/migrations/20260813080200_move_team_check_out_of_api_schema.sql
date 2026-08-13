@@ -1,0 +1,30 @@
+create schema if not exists private;
+revoke all on schema private from public, anon;
+grant usage on schema private to authenticated, service_role;
+
+alter function public.is_team_member(uuid) set schema private;
+revoke execute on function private.is_team_member(uuid) from public, anon;
+grant execute on function private.is_team_member(uuid) to authenticated, service_role;
+
+alter policy "team_access_emails_team" on public.team_access_emails using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "profiles_read" on public.profiles using (private.is_team_member(auth.uid()) or id = auth.uid());
+alter policy "roles_read_team" on public.user_roles using (private.is_team_member(auth.uid()) or user_id = auth.uid());
+alter policy "customers_team" on public.customers using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "suppliers_team" on public.suppliers using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "vehicles_team" on public.vehicles using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "photos_team" on public.vehicle_photos using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "documents_team" on public.vehicle_documents using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "checklist_team" on public.vehicle_checklist using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "entries_team" on public.vehicle_entries using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "expenses_team" on public.vehicle_expenses using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "prices_team" on public.vehicle_price_history using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "sales_team" on public.vehicle_sales using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "history_team" on public.vehicle_history using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "garage_expenses_team" on public.garage_expenses using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "leads_team" on public.leads using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "notifications_team" on public.notifications using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "settings_team_write" on public.garage_settings using (private.is_team_member(auth.uid())) with check (private.is_team_member(auth.uid()));
+alter policy "team_read_vehicle_files" on storage.objects using (bucket_id in ('vehicle-photos','vehicle-documents') and private.is_team_member(auth.uid()));
+alter policy "team_upload_vehicle_files" on storage.objects with check (bucket_id in ('vehicle-photos','vehicle-documents') and private.is_team_member(auth.uid()));
+alter policy "team_update_vehicle_files" on storage.objects using (bucket_id in ('vehicle-photos','vehicle-documents') and private.is_team_member(auth.uid())) with check (bucket_id in ('vehicle-photos','vehicle-documents') and private.is_team_member(auth.uid()));
+alter policy "team_delete_vehicle_files" on storage.objects using (bucket_id in ('vehicle-photos','vehicle-documents') and private.is_team_member(auth.uid()));
