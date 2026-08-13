@@ -1,10 +1,13 @@
-# Correção de deploy na Vercel
+# Vercel fix
 
-Versões TanStack ajustadas para versões publicadas e compatíveis:
+This version removes the Lovable-specific Vite wrapper and uses the standard TanStack Start + Nitro Vercel configuration.
 
-- @tanstack/react-router: 1.170.18
-- @tanstack/react-start: 1.168.32
-- @tanstack/router-plugin: 1.168.23
-- Node.js: 22.x
+Main changes:
+- `@lovable.dev/vite-tanstack-config` removed.
+- Standard `tanstackStart()` Vite plugin enabled.
+- Nitro Vite plugin configured with the `vercel` preset.
+- Custom `src/server.ts` removed so TanStack Start uses its default server entry.
+- Lovable Cloud Auth and Lovable runtime error-reporting code removed.
+- Node.js fixed to 22.x.
 
-O erro ETARGET anterior acontecia porque `@tanstack/react-router@1.168.32` não existe no npm.
+The Supabase client and existing application routes/data logic are unchanged.
