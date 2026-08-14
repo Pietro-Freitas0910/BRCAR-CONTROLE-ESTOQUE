@@ -174,7 +174,7 @@ function Estoque() {
             >
               <div className="aspect-[16/10] bg-muted">
                 {v.cover_photo_url ? (
-                  <img src={v.cover_photo_url} alt="" className="size-full object-contain bg-muted p-1" />
+                  <img src={v.cover_photo_url} alt="" className="size-full object-cover" />
                 ) : null}
               </div>
               <div className="space-y-2 p-5">

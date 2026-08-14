@@ -31,7 +31,7 @@ export function VehicleCard({ vehicle }: { vehicle: CatalogVehicle }) {
             src={vehicle.cover_photo_url}
             alt={vehicleTitle(vehicle)}
             loading="lazy"
-            className="size-full object-contain p-1 transition-opacity duration-300 group-hover:opacity-95"
+            className="size-full object-cover transition-opacity duration-300 group-hover:opacity-95"
           />
         ) : (
           <div className="flex size-full items-center justify-center text-muted-foreground">
