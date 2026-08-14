@@ -122,11 +122,12 @@ function CatalogPage() {
                 <a href="#estoque">Ver estoque ({vehicles.length})</a>
               </Button>
               <WhatsAppButton
-                message={buildCatalogMessage(vehicles.slice(0, 8), catalogLink)}
-                phones={settings?.whatsapp}
-                label="Falar no WhatsApp"
-                variant="outline"
-              />
+  message={buildCatalogMessage(vehicles.slice(0, 8), catalogLink)}
+  phones={settings?.whatsapp}
+  label="Falar no WhatsApp"
+  variant="outline"
+  className="border-ink-foreground/40 bg-transparent text-ink-foreground hover:bg-ink-foreground/10 hover:text-ink-foreground"
+/>
             </div>
             <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-sidebar-border pt-6">
               <div>
