@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ShieldOff, ShieldCheck, Trash2 } from "lucide-react";
+import { ShieldOff, ShieldCheck, UserCheck, UserX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -14,12 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
-
-type InviteRow = {
-  email: string;
-  role: AppRole;
-  created_at: string;
-};
 
 type MemberRow = {
   id: string;
@@ -35,71 +27,59 @@ const ROLE_LABEL: Record<AppRole, string> = {
   financeiro: "Financeiro",
 };
 
+async function fetchMembers(): Promise<MemberRow[]> {
+  const [{ data: profiles, error: pErr }, { data: roleRows, error: rErr }] = await Promise.all([
+    supabase.from("profiles").select("id, name, email, active"),
+    supabase.from("user_roles").select("user_id, role"),
+  ]);
+  if (pErr) throw new Error(pErr.message);
+  if (rErr) throw new Error(rErr.message);
+  const roleByUser = new Map((roleRows ?? []).map((r) => [r.user_id, r.role as AppRole]));
+  return (profiles ?? []).map((p) => ({
+    id: p.id,
+    name: p.name,
+    email: p.email,
+    active: p.active,
+    role: roleByUser.get(p.id) ?? null,
+  }));
+}
+
 export function TeamAccessPanel() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<AppRole>("vendedor");
 
-  const { data: invites, isLoading: loadingInvites } = useQuery({
-    queryKey: ["team_access_emails"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("team_access_emails")
-        .select("email, role, created_at")
-        .order("created_at", { ascending: false });
-      if (error) throw new Error(error.message);
-      return (data ?? []) as InviteRow[];
-    },
-  });
-
-  const { data: members, isLoading: loadingMembers } = useQuery({
+  const { data: members, isLoading } = useQuery({
     queryKey: ["team_members"],
-    queryFn: async () => {
-      const [{ data: profiles, error: pErr }, { data: roleRows, error: rErr }] =
-        await Promise.all([
-          supabase.from("profiles").select("id, name, email, active"),
-          supabase.from("user_roles").select("user_id, role"),
-        ]);
-      if (pErr) throw new Error(pErr.message);
-      if (rErr) throw new Error(rErr.message);
-      const roleByUser = new Map((roleRows ?? []).map((r) => [r.user_id, r.role as AppRole]));
-      return (profiles ?? [])
-        .map((p) => ({
-          id: p.id,
-          name: p.name,
-          email: p.email,
-          active: p.active,
-          role: roleByUser.get(p.id) ?? null,
-        }))
-        .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "")) as MemberRow[];
-    },
+    queryFn: fetchMembers,
   });
 
-  const addInvite = useMutation({
-    mutationFn: async () => {
-      const clean = email.trim().toLowerCase();
-      if (!clean) throw new Error("Informe um e-mail.");
-      const { error } = await supabase.from("team_access_emails").insert({ email: clean, role });
-      if (error) throw new Error(error.message);
+  const pending = (members ?? []).filter((m) => !m.role);
+  const approved = (members ?? []).filter((m) => !!m.role);
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["team_members"] });
+
+  const approve = useMutation({
+    mutationFn: async ({ id, role }: { id: string; role: AppRole }) => {
+      const { error: e1 } = await supabase.from("profiles").update({ active: true }).eq("id", id);
+      if (e1) throw new Error(e1.message);
+      const { error: e2 } = await supabase.from("user_roles").insert({ user_id: id, role });
+      if (e2) throw new Error(e2.message);
     },
     onSuccess: async () => {
-      toast.success("Acesso liberado. Peça para a pessoa criar a conta com esse e-mail.");
-      setEmail("");
-      setRole("vendedor");
-      await queryClient.invalidateQueries({ queryKey: ["team_access_emails"] });
+      toast.success("Acesso aprovado.");
+      await invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const removeInvite = useMutation({
-    mutationFn: async (targetEmail: string) => {
-      const { error } = await supabase.from("team_access_emails").delete().eq("email", targetEmail);
+  const reject = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("profiles").delete().eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: async () => {
-      toast.success("Convite removido.");
-      await queryClient.invalidateQueries({ queryKey: ["team_access_emails"] });
+      toast.success("Cadastro recusado.");
+      await invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -111,134 +91,169 @@ export function TeamAccessPanel() {
     },
     onSuccess: async (_data, vars) => {
       toast.success(vars.active ? "Acesso reativado." : "Acesso revogado.");
-      await queryClient.invalidateQueries({ queryKey: ["team_members"] });
+      await invalidate();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const changeRole = useMutation({
+    mutationFn: async ({ id, role }: { id: string; role: AppRole }) => {
+      const { error: delErr } = await supabase.from("user_roles").delete().eq("user_id", id);
+      if (delErr) throw new Error(delErr.message);
+      const { error: insErr } = await supabase.from("user_roles").insert({ user_id: id, role });
+      if (insErr) throw new Error(insErr.message);
+    },
+    onSuccess: async () => {
+      toast.success("Cargo atualizado.");
+      await invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   return (
     <div className="card-elevated h-fit space-y-8 p-6">
-      <div className="space-y-4">
-        <div>
-          <h2 className="font-display text-lg font-bold">Membros com acesso</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Só você (administrador) vê e controla essa lista. Revogar tira o acesso da pessoa na
-            hora, mesmo que ela já esteja logada — sem precisar apagar a conta dela.
-          </p>
-        </div>
+      <div>
+        <h2 className="font-display text-lg font-bold">Acessos da equipe</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Só você (administrador) vê e controla essa lista. Qualquer pessoa pode criar uma conta
+          no site, mas ela só entra no painel depois que você aprovar aqui.
+        </p>
+      </div>
 
+      {pending.length > 0 ? (
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-amber-700">
+            Pedidos de acesso ({pending.length})
+          </h3>
+          <div className="divide-y rounded-lg border border-amber-200 bg-amber-50/50">
+            {pending.map((m) => (
+              <PendingRow
+                key={m.id}
+                member={m}
+                onApprove={(role) => approve.mutate({ id: m.id, role })}
+                onReject={() => reject.mutate(m.id)}
+                busy={approve.isPending || reject.isPending}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold">Membros aprovados</h3>
         <div className="divide-y rounded-lg border">
-          {loadingMembers ? (
+          {isLoading ? (
             <p className="p-4 text-sm text-muted-foreground">Carregando...</p>
-          ) : !members?.length ? (
-            <p className="p-4 text-sm text-muted-foreground">Nenhum membro ainda.</p>
+          ) : !approved.length ? (
+            <p className="p-4 text-sm text-muted-foreground">Ninguém aprovado ainda.</p>
           ) : (
-            members.map((m) => {
+            approved.map((m) => {
               const isSelf = m.id === user?.id;
               return (
                 <div key={m.id} className="flex items-center justify-between gap-3 p-3">
                   <div>
                     <p className="text-sm font-medium">
-                      {m.name || m.email} {isSelf ? <span className="text-muted-foreground">(você)</span> : null}
+                      {m.name || m.email}{" "}
+                      {isSelf ? <span className="text-muted-foreground">(você)</span> : null}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {m.email} · {m.role ? ROLE_LABEL[m.role] : "sem cargo"} ·{" "}
+                      {m.email} ·{" "}
                       <span className={m.active ? "text-emerald-600" : "text-destructive"}>
                         {m.active ? "acesso ativo" : "acesso revogado"}
                       </span>
                     </p>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    disabled={isSelf || setActive.isPending}
-                    title={isSelf ? "Você não pode revogar seu próprio acesso" : undefined}
-                    onClick={() => setActive.mutate({ id: m.id, active: !m.active })}
-                    aria-label={m.active ? `Revogar acesso de ${m.email}` : `Reativar acesso de ${m.email}`}
-                  >
-                    {m.active ? (
-                      <ShieldOff className="h-4 w-4 text-destructive" />
-                    ) : (
-                      <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={m.role ?? "vendedor"}
+                      disabled={isSelf || changeRole.isPending}
+                      onValueChange={(v) => changeRole.mutate({ id: m.id, role: v as AppRole })}
+                    >
+                      <SelectTrigger className="h-8 w-32 text-xs" title={isSelf ? "Você não pode mudar seu próprio cargo" : undefined}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vendedor">Vendedor</SelectItem>
+                        <SelectItem value="financeiro">Financeiro</SelectItem>
+                        <SelectItem value="admin">Administrador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={isSelf || setActive.isPending}
+                      title={isSelf ? "Você não pode revogar seu próprio acesso" : undefined}
+                      onClick={() => setActive.mutate({ id: m.id, active: !m.active })}
+                      aria-label={m.active ? `Revogar acesso de ${m.email}` : `Reativar acesso de ${m.email}`}
+                    >
+                      {m.active ? (
+                        <ShieldOff className="h-4 w-4 text-destructive" />
+                      ) : (
+                        <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
               );
             })
           )}
         </div>
       </div>
+    </div>
+  );
+}
 
-      <div className="space-y-4">
-        <div>
-          <h2 className="font-display text-lg font-bold">Convites (ainda sem conta)</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Libere um e-mail aqui e peça para a pessoa criar conta na tela de login com esse
-            mesmo e-mail — ela recebe o link de confirmação e já entra com o cargo escolhido.
-          </p>
-        </div>
+function PendingRow({
+  member,
+  onApprove,
+  onReject,
+  busy,
+}: {
+  member: MemberRow;
+  onApprove: (role: AppRole) => void;
+  onReject: () => void;
+  busy: boolean;
+}) {
+  const [role, setRole] = useState<AppRole>("vendedor");
 
-        <form
-          className="flex flex-col gap-3 sm:flex-row sm:items-end"
-          onSubmit={(e) => {
-            e.preventDefault();
-            addInvite.mutate();
-          }}
+  return (
+    <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="text-sm font-medium">{member.name || member.email}</p>
+        <p className="text-xs text-muted-foreground">{member.email}</p>
+      </div>
+      <div className="flex items-center gap-2">
+        <Select value={role} onValueChange={(v) => setRole(v as AppRole)}>
+          <SelectTrigger className="h-8 w-32 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="vendedor">Vendedor</SelectItem>
+            <SelectItem value="financeiro">Financeiro</SelectItem>
+            <SelectItem value="admin">Administrador</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={busy}
+          onClick={() => onApprove(role)}
+          aria-label={`Aprovar ${member.email}`}
         >
-          <div className="flex-1 space-y-1.5">
-            <Label>E-mail autorizado</Label>
-            <Input
-              type="email"
-              placeholder="pessoa@exemplo.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5 sm:w-40">
-            <Label>Cargo</Label>
-            <Select value={role} onValueChange={(v) => setRole(v as AppRole)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="vendedor">Vendedor</SelectItem>
-                <SelectItem value="financeiro">Financeiro</SelectItem>
-                <SelectItem value="admin">Administrador</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Button type="submit" disabled={addInvite.isPending}>
-            Liberar acesso
-          </Button>
-        </form>
-
-        <div className="divide-y rounded-lg border">
-          {loadingInvites ? (
-            <p className="p-4 text-sm text-muted-foreground">Carregando...</p>
-          ) : !invites?.length ? (
-            <p className="p-4 text-sm text-muted-foreground">Nenhum convite pendente.</p>
-          ) : (
-            invites.map((r) => (
-              <div key={r.email} className="flex items-center justify-between gap-3 p-3">
-                <div>
-                  <p className="text-sm font-medium">{r.email}</p>
-                  <p className="text-xs text-muted-foreground">{ROLE_LABEL[r.role]}</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  disabled={removeInvite.isPending}
-                  onClick={() => removeInvite.mutate(r.email)}
-                  aria-label={`Remover convite de ${r.email}`}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
+          <UserCheck className="h-4 w-4 text-emerald-600" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={busy}
+          onClick={onReject}
+          aria-label={`Recusar ${member.email}`}
+        >
+          <UserX className="h-4 w-4 text-destructive" />
+        </Button>
       </div>
     </div>
   );
