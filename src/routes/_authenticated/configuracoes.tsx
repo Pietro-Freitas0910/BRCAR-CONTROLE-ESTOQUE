@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { settingsQuery } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
+import { TeamAccessPanel } from "@/components/settings/TeamAccessPanel";
 
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   head: () => ({
@@ -119,6 +120,8 @@ function Configuracoes() {
             O primeiro usuário cadastrado recebe o papel de administrador automaticamente.
           </p>
         </div>
+
+        {roles.includes("admin") ? <TeamAccessPanel /> : null}
       </div>
     </>
   );

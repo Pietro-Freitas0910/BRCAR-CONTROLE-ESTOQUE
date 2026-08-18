@@ -8,6 +8,17 @@ export const Route = createFileRoute("/_authenticated")({
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/auth" });
 
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("active")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (profileError || !profile?.active) {
+      await supabase.auth.signOut();
+      throw redirect({ to: "/auth" });
+    }
+
     const { data: roles, error: roleError } = await supabase
       .from("user_roles")
       .select("role")
