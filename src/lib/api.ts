@@ -123,3 +123,98 @@ export const salesQuery = queryOptions({
         .order("sale_date", { ascending: false }),
     ) ?? [],
 });
+
+// ============================================================
+// Recursos adicionados no upgrade profissional (migração 20260818031000)
+// ============================================================
+
+export type AppSettings = Settings & {
+  logo_url: string | null;
+  catalog_banner_url: string | null;
+  email: string | null;
+  cnpj: string | null;
+  opening_hours: string | null;
+  catalog_subheadline: string | null;
+  show_prices: boolean;
+  default_commission_pct: number;
+  monthly_goal_sales: number;
+  monthly_goal_profit: number;
+  monthly_goal_revenue: number;
+  min_margin_pct: number;
+  doc_alert_days: number;
+  expense_categories: string[];
+  garage_expense_categories: string[];
+  checklist_template: string[];
+};
+
+export const DEFAULT_EXPENSE_CATEGORIES = [
+  "Mecânica",
+  "Funilaria",
+  "Pintura",
+  "Pneus",
+  "Higienização",
+  "Documentação",
+  "Comissão",
+  "Marketing",
+  "Outros",
+];
+
+export const DEFAULT_GARAGE_CATEGORIES = [
+  "Aluguel",
+  "Energia",
+  "Água",
+  "Internet",
+  "Salários",
+  "Marketing",
+  "Impostos",
+  "Software",
+  "Manutenção",
+  "Outros",
+];
+
+export const appSettingsQuery = queryOptions({
+  queryKey: ["settings"],
+  queryFn: async (): Promise<AppSettings | null> => {
+    const { data, error } = await supabase
+      .from("garage_settings")
+      .select("*")
+      .eq("id", true)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return (data as AppSettings | null) ?? null;
+  },
+});
+
+export type ProfileRow = {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  active: boolean;
+  avatar_url?: string | null;
+};
+
+export const profileQuery = (userId: string | undefined) =>
+  queryOptions({
+    queryKey: ["profile", userId ?? "anon"],
+    enabled: Boolean(userId),
+    queryFn: async (): Promise<ProfileRow | null> => {
+      if (!userId) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data as ProfileRow | null) ?? null;
+    },
+  });
+
+export const teamProfilesQuery = queryOptions({
+  queryKey: ["team_profiles"],
+  queryFn: async (): Promise<ProfileRow[]> => {
+    const { data, error } = await supabase.from("profiles").select("*").order("name");
+    if (error) throw new Error(error.message);
+    return (data ?? []) as ProfileRow[];
+  },
+});
