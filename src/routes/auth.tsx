@@ -41,7 +41,7 @@ function AuthPage() {
       }
 
       await supabase.auth.signOut();
-      toast.error("Este e-mail não está autorizado a acessar a área da equipe.");
+      toast.error("Sua conta ainda não foi aprovada pelo administrador. Aguarde a liberação.");
     }
 
     void supabase.auth.getSession().then(({ data }) => {
@@ -80,9 +80,7 @@ function AuthPage() {
       toast.error(error.message);
       return;
     }
-    toast.success(
-      "Conta criada. Se este e-mail estiver autorizado, o acesso ao painel será liberado.",
-    );
+    toast.success("Conta criada. Aguarde a aprovação do administrador para acessar o painel.");
   }
 
 
@@ -176,9 +174,6 @@ function AuthPage() {
                 <Button type="submit" className="w-full" disabled={loading}>
                   Criar conta da equipe
                 </Button>
-                <p className="text-xs text-muted-foreground">
-                  O primeiro cadastro é liberado para configuração. Depois disso, somente e-mails autorizados pela equipe conseguem acessar o painel.
-                </p>
               </form>
             </TabsContent>
           </Tabs>
