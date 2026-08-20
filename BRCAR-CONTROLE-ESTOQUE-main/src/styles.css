@@ -1,0 +1,237 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * BR Car Seminovos — Design System
+ * Identidade: amarelo da marca (#F5C518) sobre grafite/preto, tipografia
+ * condensada e industrial. Cores em sRGB para compatibilidade com navegadores mais antigos.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-ink-muted: var(--ink-muted);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  --background: #f8f7f4;
+  --foreground: #151411;
+  --card: #ffffff;
+  --card-foreground: #151411;
+  --popover: #ffffff;
+  --popover-foreground: #151411;
+
+  /* Amarelo BR Car */
+  --primary: #f6cb2a;
+  --primary-foreground: #100f0d;
+  --primary-glow: #fbe55c;
+
+  --secondary: #f1f0eb;
+  --secondary-foreground: #1c1a17;
+  --muted: #f0efeb;
+  --muted-foreground: #69665e;
+  --accent: #f1ebd5;
+  --accent-foreground: #1c1a17;
+
+  --destructive: #e12527;
+  --destructive-foreground: #fcfcfc;
+  --success: #0e9254;
+  --success-foreground: #fcfcfc;
+  --warning: #f09638;
+  --warning-foreground: #151411;
+  --info: #1777b8;
+  --info-foreground: #fcfcfc;
+
+  /* Superfícies escuras (grafite da logo) */
+  --ink: #151411;
+  --ink-foreground: #f6f5f2;
+  --ink-muted: #888680;
+
+  --border: #e1e0da;
+  --input: #e1e0da;
+  --ring: #f6cb2a;
+
+  --chart-1: #f6cb2a;
+  --chart-2: #151411;
+  --chart-3: #0e9254;
+  --chart-4: #1777b8;
+  --chart-5: #d94b32;
+
+  --sidebar: #100f0d;
+  --sidebar-foreground: #e9e8e5;
+  --sidebar-primary: #f6cb2a;
+  --sidebar-primary-foreground: #100f0d;
+  --sidebar-accent: #21201d;
+  --sidebar-accent-foreground: #f6f5f2;
+  --sidebar-border: #2a2926;
+  --sidebar-ring: #f6cb2a;
+
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
+  --gradient-ink: linear-gradient(160deg, #1c1a17, #080706);
+  --shadow-card: 0 1px 2px rgba(21,20,17,.06), 0 8px 24px -12px rgba(21,20,17,.18);
+  --shadow-lift: 0 18px 40px -18px rgba(21,20,17,.35);
+  --shadow-glow: 0 12px 30px -12px rgba(246,203,42,.55);
+}
+
+.dark {
+  --background: #0e0d0b;
+  --foreground: #f3f2ef;
+  --card: #181715;
+  --card-foreground: #f3f2ef;
+  --popover: #181715;
+  --popover-foreground: #f3f2ef;
+  --secondary: #252421;
+  --secondary-foreground: #f3f2ef;
+  --muted: #252421;
+  --muted-foreground: #a09e98;
+  --accent: #312e22;
+  --accent-foreground: #f3f2ef;
+  --border: rgba(255,255,255,.12);
+  --input: rgba(255,255,255,.16);
+  --ink: #080706;
+  --ink-foreground: #f3f2ef;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility surface-ink {
+  background-image: var(--gradient-ink);
+  color: var(--color-ink-foreground);
+}
+
+@utility text-gradient-brand {
+  background-image: var(--gradient-primary);
+  background-clip: text;
+  color: transparent;
+}
+
+@utility card-elevated {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+@utility hover-lift {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+@utility eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+
+/* Responsive safeguards for touch devices */
+@media (max-width: 640px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; }
+  input, select, textarea, button { font-size: 16px; }
+  table { font-size: 0.8125rem; }
+}
+
+/* Ajustes extras do tema escuro para manter contraste consistente em todo o sistema. */
+.dark {
+  --primary: #f6cb2a;
+  --primary-foreground: #100f0d;
+  --destructive: #ff5a5f;
+  --destructive-foreground: #ffffff;
+  --success: #38b978;
+  --success-foreground: #07140d;
+  --warning: #f2ad57;
+  --warning-foreground: #151411;
+  --info: #56a8df;
+  --info-foreground: #08131a;
+  --sidebar: #0a0908;
+  --sidebar-foreground: #eeeDE9;
+  --sidebar-primary: #f6cb2a;
+  --sidebar-primary-foreground: #100f0d;
+  --sidebar-accent: #24221f;
+  --sidebar-accent-foreground: #f6f5f2;
+  --sidebar-border: #302e2a;
+  --sidebar-ring: #f6cb2a;
+  --shadow-card: 0 1px 2px rgba(0,0,0,.2), 0 8px 24px -12px rgba(0,0,0,.55);
+  --shadow-lift: 0 18px 40px -18px rgba(0,0,0,.75);
+}
