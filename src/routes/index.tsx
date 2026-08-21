@@ -107,15 +107,28 @@ function CatalogPage() {
       <SiteHeader />
 
       <section className="surface-ink relative overflow-hidden">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 lg:grid-cols-2 lg:items-center lg:px-8 lg:py-24">
+        {settings?.catalog_banner_url ? (
+          <>
+            <img
+              src={settings.catalog_banner_url}
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              fetchPriority="high"
+              className="absolute inset-0 size-full object-cover opacity-45"
+            />
+            <div className="absolute inset-0 bg-ink/65" />
+          </>
+        ) : null}
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-10 px-4 py-16 lg:grid-cols-2 lg:items-center lg:px-8 lg:py-24">
           <div>
             <p className="eyebrow text-primary">{settings?.city ?? "Seminovos"}</p>
             <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.05] text-ink-foreground lg:text-6xl">
               {settings?.catalog_headline ?? "Seminovos selecionados, prontos para rodar"}
             </h1>
             <p className="mt-5 max-w-lg text-base text-ink-muted">
-              Cada veículo passa por checklist de preparação, revisão mecânica e conferência
-              documental antes de entrar no nosso estoque.
+              {settings?.catalog_subheadline ??
+                "Cada veículo passa por checklist de preparação, revisão mecânica e conferência documental antes de entrar no nosso estoque."}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">

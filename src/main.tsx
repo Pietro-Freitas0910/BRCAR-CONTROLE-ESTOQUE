@@ -4,6 +4,15 @@ import { RouterProvider } from "@tanstack/react-router";
 import { getRouter } from "./router";
 import "./styles.css";
 
+// Aplica o tema antes do React renderizar para evitar "piscar" entre claro e escuro.
+if (typeof window !== "undefined") {
+  const savedTheme = window.localStorage.getItem("brcar-theme");
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+  const useDark = savedTheme === "dark" || (savedTheme !== "light" && prefersDark);
+  document.documentElement.classList.toggle("dark", useDark);
+  document.documentElement.style.colorScheme = useDark ? "dark" : "light";
+}
+
 const router = getRouter();
 
 declare module "@tanstack/react-router" {

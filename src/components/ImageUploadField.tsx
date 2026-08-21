@@ -57,7 +57,7 @@ export function ImageUploadField({
           )}
         >
           {value ? (
-            <img src={value} alt={label} className="size-full object-cover" />
+            <img src={value} alt={label} loading="lazy" decoding="async" className="size-full object-cover" />
           ) : (
             <ImagePlus className="size-6 text-muted-foreground" />
           )}

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/BrandLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
@@ -10,6 +11,7 @@ export function SiteHeader() {
           <BrandLogo />
         </Link>
         <nav className="flex items-center gap-2">
+          <ThemeToggle />
           <Link
             to="/"
             hash="estoque"

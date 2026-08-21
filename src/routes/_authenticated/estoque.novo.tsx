@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VehicleForm, toVehiclePayload, type VehicleFormValues } from "@/components/app/VehicleForm";
+import { uploadVehiclePhoto } from "@/lib/upload";
 
 export const Route = createFileRoute("/_authenticated/estoque/novo")({
   head: () => ({
@@ -33,17 +34,10 @@ function NovoVeiculo() {
     const rows: { vehicle_id: string; url: string; position: number; is_cover: boolean }[] = [];
     for (let index = 0; index < photos.length; index += 1) {
       const file = photos[index];
-      const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const path = `${vehicleId}/${Date.now()}-${index}.${extension}`;
-      const { error: uploadError } = await supabase.storage
-        .from("vehicle-photos")
-        .upload(path, file, { contentType: file.type || undefined, upsert: false });
-      if (uploadError) throw new Error(`Erro ao enviar ${file.name}: ${uploadError.message}`);
-
-      const { data: publicData } = supabase.storage.from("vehicle-photos").getPublicUrl(path);
+      const url = await uploadVehiclePhoto(file, vehicleId, index);
       rows.push({
         vehicle_id: vehicleId,
-        url: publicData.publicUrl,
+        url,
         position: index,
         is_cover: index === 0,
       });

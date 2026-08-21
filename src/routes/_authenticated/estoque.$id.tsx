@@ -38,6 +38,7 @@ import {
   yearLabel,
 } from "@/lib/format";
 import { buildVehicleMessage } from "@/lib/whatsapp";
+import { uploadVehiclePhoto } from "@/lib/upload";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 export const Route = createFileRoute("/_authenticated/estoque/$id")({
@@ -249,17 +250,10 @@ function VehicleDetail() {
 
       for (let index = 0; index < photoFiles.length; index += 1) {
         const file = photoFiles[index];
-        const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-        const path = `${id}/${Date.now()}-${index}.${extension}`;
-        const { error: uploadError } = await supabase.storage
-          .from("vehicle-photos")
-          .upload(path, file, { contentType: file.type || undefined, upsert: false });
-        if (uploadError) throw new Error(`Erro ao enviar ${file.name}: ${uploadError.message}`);
-
-        const { data: publicData } = supabase.storage.from("vehicle-photos").getPublicUrl(path);
+        const url = await uploadVehiclePhoto(file, id, currentCount + index);
         rows.push({
           vehicle_id: id,
-          url: publicData.publicUrl,
+          url,
           position: currentCount + index,
           is_cover: currentCount === 0 && index === 0,
         });
@@ -419,7 +413,7 @@ function VehicleDetail() {
             <div className="card-elevated overflow-hidden">
               <div className="aspect-[16/10] bg-muted">
                 {vehicle.cover_photo_url ? (
-                  <img src={vehicle.cover_photo_url} alt="" className="size-full object-contain bg-muted" />
+                  <img src={vehicle.cover_photo_url} alt="" decoding="async" fetchPriority="high" className="size-full object-contain bg-muted" />
                 ) : null}
               </div>
               <div className="p-6">
@@ -752,7 +746,7 @@ function VehicleDetail() {
             <div className="mt-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {photos.map((p) => (
                 <div key={p.id} className="group relative overflow-hidden rounded-lg border border-border">
-                  <img src={p.url} alt="" className="aspect-[4/3] w-full object-contain bg-muted" />
+                  <img src={p.url} alt="" loading="lazy" decoding="async" className="aspect-[4/3] w-full object-contain bg-muted" />
                   <Button
                     variant="secondary"
                     size="icon"

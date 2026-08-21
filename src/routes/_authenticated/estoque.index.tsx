@@ -174,7 +174,14 @@ function Estoque() {
             >
               <div className="aspect-[16/10] bg-muted">
                 {v.cover_photo_url ? (
-                  <img src={v.cover_photo_url} alt="" className="size-full object-cover" />
+                  <img
+                    src={v.cover_photo_url}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                    className="size-full object-cover"
+                  />
                 ) : null}
               </div>
               <div className="space-y-2 p-5">

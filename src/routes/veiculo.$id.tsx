@@ -120,6 +120,8 @@ function VehicleDetail() {
                   <img
                     src={gallery[active]}
                     alt={vehicleTitle(vehicle)}
+                    decoding="async"
+                    fetchPriority="high"
                     className="h-full w-full object-contain"
                   />
                 ) : null}
@@ -135,7 +137,7 @@ function VehicleDetail() {
                       i === active ? "border-primary" : "border-transparent"
                     }`}
                   >
-                    <img src={url} alt="" className="size-full object-contain bg-muted" />
+                    <img src={url} alt="" loading="lazy" decoding="async" className="size-full object-contain bg-muted" />
                   </button>
                 ))}
               </div>

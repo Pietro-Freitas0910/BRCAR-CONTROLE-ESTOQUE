@@ -12,6 +12,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -63,9 +64,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <Link to="/painel" className="mb-6 px-1">
-          <BrandLogo tone="dark" />
-        </Link>
+        <div className="mb-6 flex items-center justify-between gap-2 px-1">
+          <Link to="/painel">
+            <BrandLogo tone="dark" />
+          </Link>
+          <ThemeToggle className="border-sidebar-border bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
+        </div>
         {nav}
         <div className="mt-4 border-t border-sidebar-border pt-4">
           <p className="truncate px-3 text-sm font-semibold text-sidebar-foreground">
@@ -100,6 +104,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Menu className="size-5" />
           </Button>
           <BrandLogo showName={false} />
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
         </header>
         <main className="min-w-0 max-w-full flex-1 overflow-x-hidden p-3 sm:p-4 lg:p-8">{children}</main>
       </div>

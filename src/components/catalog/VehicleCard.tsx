@@ -31,6 +31,8 @@ export function VehicleCard({ vehicle }: { vehicle: CatalogVehicle }) {
             src={vehicle.cover_photo_url}
             alt={vehicleTitle(vehicle)}
             loading="lazy"
+            decoding="async"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="size-full object-cover transition-opacity duration-300 group-hover:opacity-95"
           />
         ) : (

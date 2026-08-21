@@ -7,7 +7,7 @@
 /*
  * BR Car Seminovos — Design System
  * Identidade: amarelo da marca (#F5C518) sobre grafite/preto, tipografia
- * condensada e industrial. Todos os valores em oklch.
+ * condensada e industrial. Cores em sRGB para compatibilidade com navegadores mais antigos.
  */
 
 @theme inline {
@@ -68,82 +68,82 @@
 :root {
   --radius: 0.75rem;
 
-  --background: oklch(0.977 0.004 95);
-  --foreground: oklch(0.19 0.006 90);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.006 90);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.006 90);
+  --background: #f8f7f4;
+  --foreground: #151411;
+  --card: #ffffff;
+  --card-foreground: #151411;
+  --popover: #ffffff;
+  --popover-foreground: #151411;
 
   /* Amarelo BR Car */
-  --primary: oklch(0.855 0.166 92.5);
-  --primary-foreground: oklch(0.17 0.005 90);
-  --primary-glow: oklch(0.915 0.155 100);
+  --primary: #f6cb2a;
+  --primary-foreground: #100f0d;
+  --primary-glow: #fbe55c;
 
-  --secondary: oklch(0.955 0.007 95);
-  --secondary-foreground: oklch(0.22 0.006 90);
-  --muted: oklch(0.952 0.006 95);
-  --muted-foreground: oklch(0.51 0.012 90);
-  --accent: oklch(0.94 0.03 95);
-  --accent-foreground: oklch(0.22 0.006 90);
+  --secondary: #f1f0eb;
+  --secondary-foreground: #1c1a17;
+  --muted: #f0efeb;
+  --muted-foreground: #69665e;
+  --accent: #f1ebd5;
+  --accent-foreground: #1c1a17;
 
-  --destructive: oklch(0.585 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.58 0.14 155);
-  --success-foreground: oklch(0.99 0 0);
-  --warning: oklch(0.75 0.15 62);
-  --warning-foreground: oklch(0.19 0.006 90);
-  --info: oklch(0.55 0.13 245);
-  --info-foreground: oklch(0.99 0 0);
+  --destructive: #e12527;
+  --destructive-foreground: #fcfcfc;
+  --success: #0e9254;
+  --success-foreground: #fcfcfc;
+  --warning: #f09638;
+  --warning-foreground: #151411;
+  --info: #1777b8;
+  --info-foreground: #fcfcfc;
 
   /* Superfícies escuras (grafite da logo) */
-  --ink: oklch(0.19 0.005 90);
-  --ink-foreground: oklch(0.97 0.004 95);
-  --ink-muted: oklch(0.62 0.01 95);
+  --ink: #151411;
+  --ink-foreground: #f6f5f2;
+  --ink-muted: #888680;
 
-  --border: oklch(0.905 0.008 95);
-  --input: oklch(0.905 0.008 95);
-  --ring: oklch(0.855 0.166 92.5);
+  --border: #e1e0da;
+  --input: #e1e0da;
+  --ring: #f6cb2a;
 
-  --chart-1: oklch(0.855 0.166 92.5);
-  --chart-2: oklch(0.19 0.005 90);
-  --chart-3: oklch(0.58 0.14 155);
-  --chart-4: oklch(0.55 0.13 245);
-  --chart-5: oklch(0.66 0.19 32);
+  --chart-1: #f6cb2a;
+  --chart-2: #151411;
+  --chart-3: #0e9254;
+  --chart-4: #1777b8;
+  --chart-5: #d94b32;
 
-  --sidebar: oklch(0.17 0.005 90);
-  --sidebar-foreground: oklch(0.93 0.004 95);
-  --sidebar-primary: oklch(0.855 0.166 92.5);
-  --sidebar-primary-foreground: oklch(0.17 0.005 90);
-  --sidebar-accent: oklch(0.245 0.006 90);
-  --sidebar-accent-foreground: oklch(0.97 0.004 95);
-  --sidebar-border: oklch(0.28 0.006 90);
-  --sidebar-ring: oklch(0.855 0.166 92.5);
+  --sidebar: #100f0d;
+  --sidebar-foreground: #e9e8e5;
+  --sidebar-primary: #f6cb2a;
+  --sidebar-primary-foreground: #100f0d;
+  --sidebar-accent: #21201d;
+  --sidebar-accent-foreground: #f6f5f2;
+  --sidebar-border: #2a2926;
+  --sidebar-ring: #f6cb2a;
 
   --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
-  --gradient-ink: linear-gradient(160deg, oklch(0.22 0.006 90), oklch(0.13 0.004 90));
-  --shadow-card: 0 1px 2px oklch(0.19 0.006 90 / 6%), 0 8px 24px -12px oklch(0.19 0.006 90 / 18%);
-  --shadow-lift: 0 18px 40px -18px oklch(0.19 0.006 90 / 35%);
-  --shadow-glow: 0 12px 30px -12px color-mix(in oklab, var(--primary) 55%, transparent);
+  --gradient-ink: linear-gradient(160deg, #1c1a17, #080706);
+  --shadow-card: 0 1px 2px rgba(21,20,17,.06), 0 8px 24px -12px rgba(21,20,17,.18);
+  --shadow-lift: 0 18px 40px -18px rgba(21,20,17,.35);
+  --shadow-glow: 0 12px 30px -12px rgba(246,203,42,.55);
 }
 
 .dark {
-  --background: oklch(0.16 0.004 90);
-  --foreground: oklch(0.96 0.004 95);
-  --card: oklch(0.205 0.005 90);
-  --card-foreground: oklch(0.96 0.004 95);
-  --popover: oklch(0.205 0.005 90);
-  --popover-foreground: oklch(0.96 0.004 95);
-  --secondary: oklch(0.26 0.006 90);
-  --secondary-foreground: oklch(0.96 0.004 95);
-  --muted: oklch(0.26 0.006 90);
-  --muted-foreground: oklch(0.7 0.01 95);
-  --accent: oklch(0.3 0.02 95);
-  --accent-foreground: oklch(0.96 0.004 95);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ink: oklch(0.13 0.004 90);
-  --ink-foreground: oklch(0.96 0.004 95);
+  --background: #0e0d0b;
+  --foreground: #f3f2ef;
+  --card: #181715;
+  --card-foreground: #f3f2ef;
+  --popover: #181715;
+  --popover-foreground: #f3f2ef;
+  --secondary: #252421;
+  --secondary-foreground: #f3f2ef;
+  --muted: #252421;
+  --muted-foreground: #a09e98;
+  --accent: #312e22;
+  --accent-foreground: #f3f2ef;
+  --border: rgba(255,255,255,.12);
+  --input: rgba(255,255,255,.16);
+  --ink: #080706;
+  --ink-foreground: #f3f2ef;
 }
 
 @layer base {
@@ -210,4 +210,28 @@
   body { overflow-x: hidden; }
   input, select, textarea, button { font-size: 16px; }
   table { font-size: 0.8125rem; }
+}
+
+/* Ajustes extras do tema escuro para manter contraste consistente em todo o sistema. */
+.dark {
+  --primary: #f6cb2a;
+  --primary-foreground: #100f0d;
+  --destructive: #ff5a5f;
+  --destructive-foreground: #ffffff;
+  --success: #38b978;
+  --success-foreground: #07140d;
+  --warning: #f2ad57;
+  --warning-foreground: #151411;
+  --info: #56a8df;
+  --info-foreground: #08131a;
+  --sidebar: #0a0908;
+  --sidebar-foreground: #eeeDE9;
+  --sidebar-primary: #f6cb2a;
+  --sidebar-primary-foreground: #100f0d;
+  --sidebar-accent: #24221f;
+  --sidebar-accent-foreground: #f6f5f2;
+  --sidebar-border: #302e2a;
+  --sidebar-ring: #f6cb2a;
+  --shadow-card: 0 1px 2px rgba(0,0,0,.2), 0 8px 24px -12px rgba(0,0,0,.55);
+  --shadow-lift: 0 18px 40px -18px rgba(0,0,0,.75);
 }

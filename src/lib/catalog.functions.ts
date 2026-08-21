@@ -60,7 +60,7 @@ export async function createLead(input: {
 export async function getPublicSettings() {
   const { data, error } = await supabase
     .from("garage_settings")
-    .select("name, whatsapp, address, city, instagram, catalog_headline")
+    .select("name, whatsapp, address, city, instagram, catalog_headline, catalog_subheadline, catalog_banner_url")
     .eq("id", true)
     .maybeSingle();
   if (error) throw new Error(error.message);
