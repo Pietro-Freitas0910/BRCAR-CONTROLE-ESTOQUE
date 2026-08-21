@@ -64,9 +64,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <Link to="/painel" className="mb-6 px-1">
-          <BrandLogo tone="dark" />
-        </Link>
+        <div className="mb-6 flex items-center justify-between gap-2 px-1">
+          <Link to="/painel">
+            <BrandLogo tone="dark" />
+          </Link>
+          <ThemeToggle className="border-sidebar-border bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
+        </div>
         {nav}
         <div className="mt-4 border-t border-sidebar-border pt-4">
           <p className="truncate px-3 text-sm font-semibold text-sidebar-foreground">
@@ -76,7 +79,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             {roles.join(", ") || "equipe"}
           </p>
           <div className="mt-3 flex gap-2 px-1">
-            <ThemeToggle className="text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
             <Button asChild variant="ghost" size="sm" className="flex-1 text-sidebar-foreground/80">
               <Link to="/">Ver site</Link>
             </Button>

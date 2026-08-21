@@ -20,19 +20,16 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>(() => getInitialTheme());
 
   useEffect(() => {
-    const initial = getInitialTheme();
-    setTheme(initial);
-    applyTheme(initial);
-  }, []);
+    applyTheme(theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     const next: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(next);
     window.localStorage.setItem(THEME_KEY, next);
-    applyTheme(next);
+    setTheme(next);
   };
 
   const isDark = theme === "dark";
@@ -40,14 +37,15 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   return (
     <Button
       type="button"
-      variant="ghost"
-      size="icon"
+      variant="outline"
+      size="sm"
       onClick={toggleTheme}
-      className={className}
+      className={`gap-2 ${className}`}
       aria-label={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
-      title={isDark ? "Modo claro" : "Modo escuro"}
+      title={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
     >
       {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      <span className="hidden sm:inline">{isDark ? "Claro" : "Escuro"}</span>
     </Button>
   );
 }
